@@ -16,6 +16,8 @@ from torchvision import transforms
 from torchvision.transforms import ToTensor
 from torchvision import datasets
 import torch
+import random
+import numpy as np
 # Device configuration
 device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
 device
@@ -32,233 +34,259 @@ test_data = datasets.MNIST(
     transform=transforms.Compose([transforms.Resize(32), ToTensor()])
 )
 
+
 print(train_data)
 print(test_data)
 
-# print(torch.max(train_data[1][0]))
+# for t in test_data:
+#     print(t[1])
+new_train_data = []
+new_train_data_labels = []
 
-loaders = {
-    'train': torch.utils.data.DataLoader(train_data,
-                                         batch_size=128,
-                                         shuffle=True,
-                                         num_workers=1),
+for i in range(0, 1):
+    row = random.randint(0, 1)
+    col = 0
+    if row != 0:
+        col = random.randint(0, 1)
+    print("the row X col:", row, "X", col)
+    new_data_point = []
+    new_data_point_label = []
+    # right now we are making 60,000 train data points and we have generated the matrix size
+    # we now have to make a matrix of the specifies size and take a random data point from the train_data
+    for r in range(row):
+        temp = []
+        temp_label = []
+        for c in range(col):
+            data_point = random.choice(test_data)
+            temp.append(np.array(data_point[0]))
+            print(data_point[1])
+            temp_label.append(np.array(data_point[1]))
+        new_data_point.append(np.array(temp))
+        new_data_point_label.append(np.array(temp_label))
 
-    'test': torch.utils.data.DataLoader(test_data,
-                                        batch_size=128,
-                                        shuffle=False,
-                                        num_workers=1),
-}
-loaders
+    new_train_data.append(np.array(new_data_point))
+    new_train_data_labels.append(np.array(new_data_point_label))
+    print(np.array(new_data_point).shape)
+    print(new_data_point)
+    # print(np.array(new_data_point_label))
+    # # print(torch.max(train_data[1][0]))
 
+    # loaders = {
+    #     'train': torch.utils.data.DataLoader(train_data,
+    #                                          batch_size=128,
+    #                                          shuffle=True,
+    #                                          num_workers=1),
 
-class CNN(nn.Module):
-    def __init__(self):
-        super(CNN, self).__init__()
-        self.conv1 = nn.Sequential(
-            nn.Conv2d(1, 64, 3, 1, 1),
-            nn.BatchNorm2d(64),
-            nn.ReLU(),
-            nn.MaxPool2d(2, 2),
-        )
-        self.conv2 = nn.Sequential(
-            nn.Conv2d(64, 128, 3, 1, 1),
-            nn.BatchNorm2d(128),
-            nn.ReLU(),
-            nn.MaxPool2d(2, 2),
-        )
-        self.conv3 = nn.Sequential(
-            nn.Conv2d(128, 256, 3, 1, 1),
-            nn.BatchNorm2d(256),
-            nn.ReLU(),
-        )
-        self.conv4 = nn.Sequential(
-            nn.Conv2d(256, 256, 3, 1, 1),
-            nn.BatchNorm2d(256),
-            nn.ReLU(),
-            nn.MaxPool2d(2, 2),
-        )
-        self.conv5 = nn.Sequential(
-            nn.Conv2d(256, 512, 3, 1, 1),
-            nn.BatchNorm2d(512),
-            nn.ReLU(),
-        )
-        self.conv6 = nn.Sequential(
-            nn.Conv2d(512, 512, 3, 1, 1),
-            nn.BatchNorm2d(512),
-            nn.ReLU(),
-            nn.MaxPool2d(2, 2),
-        )
-        self.conv7 = nn.Sequential(
-            nn.Conv2d(512, 512, 3, 1, 1),
-            nn.BatchNorm2d(512),
-            nn.ReLU(),
-        )
-        self.conv8 = nn.Sequential(
-            nn.Conv2d(512, 512, 3, 1, 1),
-            nn.BatchNorm2d(512),
-            nn.ReLU(),
-            nn.MaxPool2d(2, 2),
-        )
-        # fully connected layer, output 10 classes
-        self.fc1 = nn.Sequential(
-            nn.Linear(512, 4096),
-            nn.ReLU(),
-            nn.Dropout(0.5))
-        self.fc2 = nn.Sequential(
-            nn.Linear(4096, 4096),
-            nn.ReLU(),
-            nn.Dropout(0.5))
-        self.fc3 = nn.Linear(4096, 10)
-        # self.fc3 = nn.Linear(512, 10)
+    #     'test': torch.utils.data.DataLoader(test_data,
+    #                                         batch_size=128,
+    #                                         shuffle=False,
+    #                                         num_workers=1),
+    # }
+    # loaders
 
-    def forward(self, x):
-        x = self.conv1(x)
-        x = self.conv2(x)
-        x = self.conv3(x)
-        x = self.conv4(x)
-        x = self.conv5(x)
-        x = self.conv6(x)
-        x = self.conv7(x)
-        x = self.conv8(x)
+    # class CNN(nn.Module):
+    #     def __init__(self):
+    #         super(CNN, self).__init__()
+    #         self.conv1 = nn.Sequential(
+    #             nn.Conv2d(1, 64, 3, 1, 1),
+    #             nn.BatchNorm2d(64),
+    #             nn.ReLU(),
+    #             nn.MaxPool2d(2, 2),
+    #         )
+    #         self.conv2 = nn.Sequential(
+    #             nn.Conv2d(64, 128, 3, 1, 1),
+    #             nn.BatchNorm2d(128),
+    #             nn.ReLU(),
+    #             nn.MaxPool2d(2, 2),
+    #         )
+    #         self.conv3 = nn.Sequential(
+    #             nn.Conv2d(128, 256, 3, 1, 1),
+    #             nn.BatchNorm2d(256),
+    #             nn.ReLU(),
+    #         )
+    #         self.conv4 = nn.Sequential(
+    #             nn.Conv2d(256, 256, 3, 1, 1),
+    #             nn.BatchNorm2d(256),
+    #             nn.ReLU(),
+    #             nn.MaxPool2d(2, 2),
+    #         )
+    #         self.conv5 = nn.Sequential(
+    #             nn.Conv2d(256, 512, 3, 1, 1),
+    #             nn.BatchNorm2d(512),
+    #             nn.ReLU(),
+    #         )
+    #         self.conv6 = nn.Sequential(
+    #             nn.Conv2d(512, 512, 3, 1, 1),
+    #             nn.BatchNorm2d(512),
+    #             nn.ReLU(),
+    #             nn.MaxPool2d(2, 2),
+    #         )
+    #         self.conv7 = nn.Sequential(
+    #             nn.Conv2d(512, 512, 3, 1, 1),
+    #             nn.BatchNorm2d(512),
+    #             nn.ReLU(),
+    #         )
+    #         self.conv8 = nn.Sequential(
+    #             nn.Conv2d(512, 512, 3, 1, 1),
+    #             nn.BatchNorm2d(512),
+    #             nn.ReLU(),
+    #             nn.MaxPool2d(2, 2),
+    #         )
+    #         # fully connected layer, output 10 classes
+    #         self.fc1 = nn.Sequential(
+    #             nn.Linear(512, 4096),
+    #             nn.ReLU(),
+    #             nn.Dropout(0.5))
+    #         self.fc2 = nn.Sequential(
+    #             nn.Linear(4096, 4096),
+    #             nn.ReLU(),
+    #             nn.Dropout(0.5))
+    #         self.fc3 = nn.Linear(4096, 10)
+    #         # self.fc3 = nn.Linear(512, 10)
 
-        # flatten the output of conv2 to (batch_size, 32 * 7 * 7)
-        x = torch.flatten(x, 1)
-        x = self.fc1(x)
-        x = self.fc2(x)
-        x = self.fc3(x)
+    #     def forward(self, x):
+    #         x = self.conv1(x)
+    #         x = self.conv2(x)
+    #         x = self.conv3(x)
+    #         x = self.conv4(x)
+    #         x = self.conv5(x)
+    #         x = self.conv6(x)
+    #         x = self.conv7(x)
+    #         x = self.conv8(x)
 
-        return x
+    #         # flatten the output of conv2 to (batch_size, 32 * 7 * 7)
+    #         x = torch.flatten(x, 1)
+    #         x = self.fc1(x)
+    #         x = self.fc2(x)
+    #         x = self.fc3(x)
 
+    #         return x
 
-cnn = CNN()
+    # cnn = CNN()
 
-loss_func = nn.CrossEntropyLoss()
-loss_func
+    # loss_func = nn.CrossEntropyLoss()
+    # loss_func
 
-# optimizer = optim.Adam(cnn.parameters(), lr = 0.001)
-optimizer = optim.SGD(cnn.parameters(), lr=0.001,
-                      momentum=0.9, weight_decay=0.001)
-optimizer
+    # # optimizer = optim.Adam(cnn.parameters(), lr = 0.001)
+    # optimizer = optim.SGD(cnn.parameters(), lr=0.001,
+    #                       momentum=0.9, weight_decay=0.001)
+    # optimizer
 
-print("TILL HERE BITCHES")
+    # print("TILL HERE BITCHES")
 
+    # def train(cnn, loaders):
+    #     train_loss = 0.0
+    #     train_accuracy = 0.0
+    #     cnn.train()
 
-def train(cnn, loaders):
-    train_loss = 0.0
-    train_accuracy = 0.0
-    cnn.train()
+    #     # Train the model
+    #     total_step = len(loaders['train'])
 
-    # Train the model
-    total_step = len(loaders['train'])
+    #     for i, (images, labels) in enumerate(loaders['train']):
+    #         # print(len(loaders['train']))
 
-    for i, (images, labels) in enumerate(loaders['train']):
-        # print(len(loaders['train']))
+    #         # gives batch data, normalize x when iterate train_loader
+    #         # b_x = Variable(images)   # batch x
+    #         b_x = images
+    #         # b_y = Variable(labels)   # batch y
+    #         b_y = labels
+    #         output = cnn(b_x)
+    #         loss = loss_func(output, b_y)
+    #         train_loss += loss.item()
+    #         pred_y = torch.max(output, 1)[1].data.squeeze()
+    #         train_accuracy += (pred_y == b_y).sum().item()/float(labels.size(0))
+    #         # print("Label", float(labels.size(0)))
+    #         # print(train_accuracy)
 
-        # gives batch data, normalize x when iterate train_loader
-        # b_x = Variable(images)   # batch x
-        b_x = images
-        # b_y = Variable(labels)   # batch y
-        b_y = labels
-        output = cnn(b_x)
-        loss = loss_func(output, b_y)
-        train_loss += loss.item()
-        pred_y = torch.max(output, 1)[1].data.squeeze()
-        train_accuracy += (pred_y == b_y).sum().item()/float(labels.size(0))
-        # print("Label", float(labels.size(0)))
-        # print(train_accuracy)
+    #         # clear gradients for this training step
+    #         optimizer.zero_grad()
 
-        # clear gradients for this training step
-        optimizer.zero_grad()
+    #         # backpropagation, compute gradients
+    #         loss.backward()
+    #         # apply gradients
+    #         optimizer.step()
+    #         # do I have to get the loss of each step or the last step only?
+    #         print('Epoch [{}/{}], Step [{}/{}], Loss: {:.4f}'
+    #               .format(1, 1, i + 1, total_step, loss.item()))
+    #         # if (i+1) % 100 == 0:
+    #         #     print ('Epoch [{}/{}], Step [{}/{}], Loss: {:.4f}'
+    #         #             .format(1, num_epochs, i + 1, total_step, loss.item()))
+    #         #     pass
+    #         # test()
+    #     pass
+    #     print("TRain loss:", train_loss/len(loaders['train']))
+    #     print("Train accuracy", train_accuracy/len(loaders['train']))
+    #     return train_loss/len(loaders['train']), train_accuracy/len(loaders['train'])
 
-        # backpropagation, compute gradients
-        loss.backward()
-        # apply gradients
-        optimizer.step()
-        # do I have to get the loss of each step or the last step only?
-        print('Epoch [{}/{}], Step [{}/{}], Loss: {:.4f}'
-              .format(1, 1, i + 1, total_step, loss.item()))
-        # if (i+1) % 100 == 0:
-        #     print ('Epoch [{}/{}], Step [{}/{}], Loss: {:.4f}'
-        #             .format(1, num_epochs, i + 1, total_step, loss.item()))
-        #     pass
-        # test()
-    pass
-    print("TRain loss:", train_loss/len(loaders['train']))
-    print("Train accuracy", train_accuracy/len(loaders['train']))
-    return train_loss/len(loaders['train']), train_accuracy/len(loaders['train'])
+    # def test():
+    #     # Test the model
+    #     test_loss = 0.0
+    #     test_accuracy = 0.0
+    #     cnn.eval()
+    #     loop = 0
+    #     with torch.no_grad():
 
+    #         correct = 0
+    #         total = 0
+    #         for images, labels in loaders['test']:
+    #             loop += 1
+    #             # test_output = cnn(images)
+    #             output = cnn(images)
+    #             loss = loss_func(output, labels)
+    #             test_loss += loss.item()
+    #             pred_y = torch.max(output, 1)[1].data.squeeze()
+    #             test_accuracy += (pred_y == labels).sum().item() / \
+    #                 float(labels.size(0))
+    #             pred_y = torch.max(output, 1)[1].data.squeeze()
+    #             # test_accuracy += (pred_y == labels).sum().item() / float(labels.size(0))
+    #             # test_loss += loss_func(output, labels).item()
+    #             # accuracy = (pred_y == labels).sum().item() / float(labels.size(0))
+    #             print('Test Accuracy of the model on the 10000 test images: %.2f' %
+    #                   test_accuracy, test_loss)
+    #             pass
 
-def test():
-    # Test the model
-    test_loss = 0.0
-    test_accuracy = 0.0
-    cnn.eval()
-    loop = 0
-    with torch.no_grad():
+    #         pass
+    #         # print(loop)
+    #         # print(len(loaders['test']))
+    #         print("Test Loss:", test_loss/len(loaders['test']))
+    #         print("Test Accuracy: ", test_accuracy/len(loaders['test']))
+    #         return test_loss/len(loaders['test']), test_accuracy/len(loaders['test'])
 
-        correct = 0
-        total = 0
-        for images, labels in loaders['test']:
-            loop += 1
-            # test_output = cnn(images)
-            output = cnn(images)
-            loss = loss_func(output, labels)
-            test_loss += loss.item()
-            pred_y = torch.max(output, 1)[1].data.squeeze()
-            test_accuracy += (pred_y == labels).sum().item() / \
-                float(labels.size(0))
-            pred_y = torch.max(output, 1)[1].data.squeeze()
-            # test_accuracy += (pred_y == labels).sum().item() / float(labels.size(0))
-            # test_loss += loss_func(output, labels).item()
-            # accuracy = (pred_y == labels).sum().item() / float(labels.size(0))
-            print('Test Accuracy of the model on the 10000 test images: %.2f' %
-                  test_accuracy, test_loss)
-            pass
+    # train_loss_arr = []
+    # test_loss_arr = []
+    # train_accuracy_arr = []
+    # test_accuracy_arr = []
 
-        pass
-        # print(loop)
-        # print(len(loaders['test']))
-        print("Test Loss:", test_loss/len(loaders['test']))
-        print("Test Accuracy: ", test_accuracy/len(loaders['test']))
-        return test_loss/len(loaders['test']), test_accuracy/len(loaders['test'])
+    # for epoch in range(3):
+    #     loss_train, accuracy_train = train(cnn, loaders)
+    #     train_loss_arr.append(loss_train)
+    #     train_accuracy_arr.append(accuracy_train)
+    #     loss_test, accuracy_test = test()
+    #     test_loss_arr.append(loss_test)
+    #     test_accuracy_arr.append(accuracy_test)
 
+    # print("Training loss:", train_loss_arr)
+    # print("Training accuracy:", train_accuracy_arr)
+    # print("Testing loss:", test_loss_arr)
+    # print("Testing accuracy:", test_accuracy_arr)
 
-train_loss_arr = []
-test_loss_arr = []
-train_accuracy_arr = []
-test_accuracy_arr = []
+    # print("Training loss:", train_loss_arr)
+    # print("Training accuracy:", train_accuracy_arr)
+    # print("Testing loss:", test_loss_arr)
+    # print("Testing accuracy:", test_accuracy_arr)
 
-for epoch in range(3):
-    loss_train, accuracy_train = train(cnn, loaders)
-    train_loss_arr.append(loss_train)
-    train_accuracy_arr.append(accuracy_train)
-    loss_test, accuracy_test = test()
-    test_loss_arr.append(loss_test)
-    test_accuracy_arr.append(accuracy_test)
+    # num_epochs_x_axis = list(range(1, 4))
+    # print(num_epochs_x_axis)
 
-print("Training loss:", train_loss_arr)
-print("Training accuracy:", train_accuracy_arr)
-print("Testing loss:", test_loss_arr)
-print("Testing accuracy:", test_accuracy_arr)
-
-print("Training loss:", train_loss_arr)
-print("Training accuracy:", train_accuracy_arr)
-print("Testing loss:", test_loss_arr)
-print("Testing accuracy:", test_accuracy_arr)
-
-num_epochs_x_axis = list(range(1, 4))
-print(num_epochs_x_axis)
-
-
-plt.title("Test Loss Vs Number of Epochs")
-plt.plot(num_epochs_x_axis, test_loss_arr)
-plt.show()
-plt.title("Test Accuracy Vs Number of Epochs")
-plt.plot(num_epochs_x_axis, test_accuracy_arr)
-plt.show()
-plt.title("Train Accuracy Vs Number of Epochs")
-plt.plot(num_epochs_x_axis, train_accuracy_arr)
-plt.show()
-plt.title("Train Loss Vs Number of Epochs")
-plt.plot(num_epochs_x_axis, train_loss_arr)
-plt.show()
+    # plt.title("Test Loss Vs Number of Epochs")
+    # plt.plot(num_epochs_x_axis, test_loss_arr)
+    # plt.show()
+    # plt.title("Test Accuracy Vs Number of Epochs")
+    # plt.plot(num_epochs_x_axis, test_accuracy_arr)
+    # plt.show()
+    # plt.title("Train Accuracy Vs Number of Epochs")
+    # plt.plot(num_epochs_x_axis, train_accuracy_arr)
+    # plt.show()
+    # plt.title("Train Loss Vs Number of Epochs")
+    # plt.plot(num_epochs_x_axis, train_loss_arr)
+    # plt.show()
